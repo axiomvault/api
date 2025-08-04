@@ -10,7 +10,10 @@ import {
 } from './utils.mjs';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://c09.8c6.mytemp.website'
+}));
+
 app.use(express.json());
 
 const deposits = {}; // In-memory DB
