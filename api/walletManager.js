@@ -1,17 +1,18 @@
 import { createWallet } from '../../walletManager.mjs';
 
 export default async function handler(req, res) {
-  // ✅ Always set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://c09.8c6.mytemp.website');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
-  // ✅ Handle preflight OPTIONS request
+  console.log('Request method:', req.method);
+  console.log('Request origin:', req.headers.origin);
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // ✅ Only allow POST after preflight
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
