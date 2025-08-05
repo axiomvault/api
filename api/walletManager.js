@@ -1,7 +1,7 @@
-const { createWallet, generateQRCode } = require('../../walletManager');
+const { createWallet } = require('../../walletManager');
 
 module.exports = async (req, res) => {
-  // --- Handle preflight (OPTIONS) request ---
+  // Handle CORS preflight request
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  // --- CORS headers for actual request ---
+  // CORS headers for actual request
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -29,13 +29,11 @@ module.exports = async (req, res) => {
     }
 
     const wallet = await createWallet(network);
-    const qrPath = await generateQRCode(wallet.address, network, amount);
 
     res.status(200).json({
       success: true,
       address: wallet.address,
-      privateKey: wallet.privateKey,
-      qrCodePath: qrPath
+      privateKey: wallet.privateKey
     });
   } catch (error) {
     console.error('API error:', error);
