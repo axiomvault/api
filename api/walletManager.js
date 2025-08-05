@@ -1,4 +1,5 @@
-import { createWallet } from '../../walletManager.mjs';
+import { createWallet } from './walletManagerHelper1.mjs';
+
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://c09.8c6.mytemp.website');
