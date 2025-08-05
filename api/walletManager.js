@@ -1,35 +1,44 @@
 const { createWallet, generateQRCode } = require('../../walletManager');
 
-
-
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', 'https://c09.8c6.mytemp.website');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-  console.log('Request method:', req.method);
-  console.log('Request origin:', req.headers.origin);
-
+module.exports = async (req, res) => {
+  // --- Handle preflight (OPTIONS) request ---
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.status(200).end();
+    return;
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
+  // --- CORS headers for actual request ---
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   try {
+    if (req.method !== 'POST') {
+      res.status(405).json({ error: 'Method Not Allowed' });
+      return;
+    }
+
     const { user_id, network, plan_id, amount } = req.body;
 
     if (!user_id || !network || !plan_id || !amount) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      res.status(400).json({ error: 'Missing parameters' });
+      return;
     }
 
-    const wallet = await createWallet(user_id, network, plan_id, amount);
-    return res.status(200).json(wallet);
-  } catch (err) {
-    console.error('API walletManager error:', err);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    const wallet = await createWallet(network);
+    const qrPath = await generateQRCode(wallet.address, network, amount);
+
+    res.status(200).json({
+      success: true,
+      address: wallet.address,
+      privateKey: wallet.privateKey,
+      qrCodePath: qrPath
+    });
+  } catch (error) {
+    console.error('API error:', error);
+    res.status(500).json({ error: 'Server error' });
   }
-}
+};
