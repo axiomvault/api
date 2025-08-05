@@ -1,4 +1,5 @@
-import { createWallet } from './walletManagerHelper1.mjs';
+const { createWallet, generateQRCode } = require('../../walletManager');
+
 
 
 export default async function handler(req, res) {

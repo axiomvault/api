@@ -1,8 +1,8 @@
-import { ethers } from 'ethers';
-import { TronWeb } from 'tronweb'; // <-- FIXED HERE
-import qrcode from 'qrcode';
-import fs from 'fs';
-import path from 'path';
+const { ethers } = require('ethers');
+const TronWeb = require('tronweb'); // no destructuring for default export in CommonJS
+const qrcode = require('qrcode');
+const fs = require('fs');
+const path = require('path');
 
 const generateQRCode = async (address, network, amount) => {
   const uri =
@@ -32,4 +32,7 @@ const createWallet = async (network) => {
   }
 };
 
-export { createWallet, generateQRCode };
+module.exports = {
+  createWallet,
+  generateQRCode
+};
