@@ -1,10 +1,11 @@
-const { ethers } = require('ethers');
-const TronWeb = require('tronweb'); // no destructuring for default export in CommonJS
-const qrcode = require('qrcode');
-const fs = require('fs');
-const path = require('path');
+// walletManager.js (in root or outside /api)
+import { ethers } from 'ethers';
+import TronWeb from 'tronweb';
+import qrcode from 'qrcode';
+import fs from 'fs';
+import path from 'path';
 
-const generateQRCode = async (address, network, amount) => {
+export async function generateQRCode(address, network, amount) {
   const uri =
     network === 'trc20'
       ? `tron:${address}?amount=${amount}`
@@ -17,11 +18,10 @@ const generateQRCode = async (address, network, amount) => {
 
   await qrcode.toFile(qrPath, uri);
   return `/qrs/${address}.png`;
-};
+}
 
-const createWallet = async (network) => {
+export async function createWallet(network) {
   const normalized = network.toLowerCase().replace('-', '');
-
   if (normalized === 'trc20') {
     const tronWeb = new TronWeb({ fullHost: 'https://api.trongrid.io' });
     const acc = await tronWeb.createAccount();
@@ -30,9 +30,4 @@ const createWallet = async (network) => {
     const wallet = ethers.Wallet.createRandom();
     return { address: wallet.address, privateKey: wallet.privateKey };
   }
-};
-
-module.exports = {
-  createWallet,
-  generateQRCode
-};
+}
